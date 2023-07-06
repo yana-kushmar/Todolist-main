@@ -67,6 +67,14 @@ const instance = axios.create({
     }
 })
 
+const authAPI = {
+    login(){
+        return instance.post<ResponseType<{ item: TodolistType }>, AxiosResponse<ResponseType<{ item: TodolistType }>>,{ title: string }>('todo-lists', {title});
+
+    }
+}
+
+
 // api
 export const todolistsAPI = {
     getTodolists() {
