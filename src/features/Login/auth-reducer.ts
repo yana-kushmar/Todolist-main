@@ -1,10 +1,15 @@
 import { Dispatch } from 'redux'
-import { SetAppErrorType, setAppLoadingStatus, SetLoadingStatusType } from '../../app/appReducer/AppReducer'
+import {
+    SetAppErrorType,
+    setAppLoadingStatus,
+    setIsInitializedAC, SetIsInitializedType,
+    SetLoadingStatusType
+} from '../../app/appReducer/AppReducer'
 import {authAPI, ResultCode} from "../../api/todolists-api";
 import {handlerServerNetworkError, handleServerAppError} from "../../utils/errorUtils";
 
 
-type ActionsType = ReturnType<typeof setIsLoggedInAC> | SetLoadingStatusType | SetAppErrorType
+type ActionsType = ReturnType<typeof setIsLoggedInAC> | SetLoadingStatusType | SetAppErrorType |SetIsInitializedType
 
 const initialState = {
     isLoggedIn: false
@@ -37,8 +42,40 @@ export const loginTC = (data: any) => async (dispatch: Dispatch<ActionsType>) =>
         const error = (e as { message: string })
         handlerServerNetworkError(dispatch, error)
     }
+}
 
-
+export const meTC = () => async (dispatch: Dispatch<ActionsType>) => {
+    dispatch(setAppLoadingStatus('loading'))
+    try{
+        const result = await authAPI.me()
+        if (result.data.resultCode === ResultCode.SUCCESS) {
+            dispatch(setIsLoggedInAC(true))
+            dispatch(setIsInitializedAC(true))
+            dispatch(setAppLoadingStatus("succeeded"))
+        } else {
+            handleServerAppError(dispatch, result.data)
+        }
+    } catch (e){
+        const error = (e as { message: string })
+        handlerServerNetworkError(dispatch, error)
+    }finally {
+        dispatch(setIsInitializedAC(true))
+    }
+}
+export const logOutTC = () => async (dispatch: Dispatch<ActionsType>) => {
+    dispatch(setAppLoadingStatus('loading'))
+    try{
+        const result = await authAPI.logOut()
+        if (result.data.resultCode === ResultCode.SUCCESS) {
+            dispatch(setIsLoggedInAC(false))
+            dispatch(setAppLoadingStatus("succeeded"))
+        } else {
+            handleServerAppError(dispatch, result.data)
+        }
+    } catch (e){
+        const error = (e as { message: string })
+        handlerServerNetworkError(dispatch, error)
+    }
 }
 
 

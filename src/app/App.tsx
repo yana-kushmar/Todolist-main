@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import './App.css'
 import {TodolistsList} from '../features/TodolistsList/TodolistsList'
 
@@ -9,16 +9,34 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import {Menu} from '@mui/icons-material';
-import {LinearProgress} from "@mui/material";
-import {useAppSelector} from "./store";
-import {RequestStatusType} from "./appReducer/AppReducer";
+import {CircularProgress, LinearProgress} from "@mui/material";
+import {useAppDispatch, useAppSelector} from "./store";
+import {RequestStatusType, setIsInitializedAC} from "./appReducer/AppReducer";
 import {ErrorSnackbars} from "../components/ErrorsSnackbar/ErrorsSnackbar";
 import {Login} from "../features/Login/Login";
-import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
+import {logOutTC, meTC} from "../features/Login/auth-reducer";
 
 
 function App() {
+    const dispatch = useAppDispatch()
     const status = useAppSelector<RequestStatusType>(store => store.app.status)
+    const isInitialized = useAppSelector<boolean>(store => store.app.isInitialized)
+    const isLoggedIn= useAppSelector(store => store.auth.isLoggedIn)
+
+    useEffect(() => {
+        dispatch(meTC())
+    }, [])
+
+    if (!isInitialized) {
+        return <div style={{position: 'fixed', top: '30%', textAlign: 'center', width: '100%'}}>
+            <CircularProgress/>
+        </div>
+    }
+
+    const logOut = () => {
+        dispatch(logOutTC())
+    }
     return (
         <div className="App">
             <ErrorSnackbars/>
@@ -30,7 +48,7 @@ function App() {
                     <Typography variant="h6">
                         News
                     </Typography>
-                    <Button color="inherit">Login</Button>
+                    {isLoggedIn && <Button color="inherit" onClick={logOut}>Log out</Button>}
                 </Toolbar>
                 {status === "loading" && <LinearProgress color="secondary"/>}
             </AppBar>

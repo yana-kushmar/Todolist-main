@@ -25,7 +25,7 @@ export type LoginType = {
 }
 export const Login = () => {
     const dispatch = useAppDispatch()
-    const isLoggedIn= useAppSelector(store => store.auth.isLoggedIn)
+     const isLoggedIn= useAppSelector(store => store.auth.isLoggedIn)
 
     const formik = useFormik({
         initialValues: {

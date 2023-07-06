@@ -57,10 +57,15 @@ type GetTasksResponse = {
     totalCount: number
     items: TaskType[]
 }
+type UserType = {
+    id: number,
+    email: string,
+    login: string
+}
 
 
 
-const instance = axios.create({
+    const instance = axios.create({
     baseURL: 'https://social-network.samuraijs.com/api/1.1/',
     withCredentials: true,
     headers: {
@@ -73,7 +78,12 @@ const instance = axios.create({
 export const authAPI = {
     login(data: LoginType){
         return instance.post<ResponseType<{userId: number}>, AxiosResponse<ResponseType<{userId: number}>>,LoginType>('/auth/login', data);
-
+    },
+    me(){
+        return instance.get<ResponseType<UserType>>('/auth/me');
+    },
+    logOut(){
+        return instance.delete<ResponseType<UserType>>('/auth/login');
     }
 }
 
