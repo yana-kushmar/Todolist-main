@@ -1,14 +1,14 @@
-import exp from "constants";
+
 
 export type RequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed'
 
-export type SetLoadingStatusType = ReturnType<typeof setLoadingStatus>
-export type SetErrorType = ReturnType<typeof setErrorAC>
-export type AppActionsType = SetLoadingStatusType | SetErrorType
+export type SetLoadingStatusType = ReturnType<typeof setAppLoadingStatus>
+export type SetAppErrorType = ReturnType<typeof setAppErrorAC>
+export type AppActionsType = SetLoadingStatusType | SetAppErrorType
 
 
  const initialState = {
-    status: 'loading' as RequestStatusType,
+    status: 'idle' as RequestStatusType,
     error: null as null | string
 }
 
@@ -26,8 +26,8 @@ export const appReducer = (state: InitialStateType = initialState, action: AppAc
     }
 }
 
-export const setLoadingStatus = (status: RequestStatusType) => ({type: 'APP/SET-STATUS', status} as const)
-export const setErrorAC = (error: string | null) => ({type: 'APP/SET-ERROR', error} as const)
+export const setAppLoadingStatus = (status: RequestStatusType) => ({type: 'APP/SET-STATUS', status} as const)
+export const setAppErrorAC = (error: string | null) => ({type: 'APP/SET-ERROR', error} as const)
 
 
 

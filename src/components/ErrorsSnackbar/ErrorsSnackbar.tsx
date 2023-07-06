@@ -2,7 +2,7 @@ import * as React from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import {useAppDispatch, useAppSelector} from "../../app/store";
-import {setErrorAC} from "../../app/appReducer/AppReducer";
+import {setAppErrorAC} from "../../app/appReducer/AppReducer";
 
 const Alert = React.forwardRef<HTMLDivElement , AlertProps>(function Alert(
     props,
@@ -19,7 +19,7 @@ export  const  ErrorSnackbars = () => {
         if (reason === 'clickaway') {
             return;
         }
-        dispatch(setErrorAC(null))
+        dispatch(setAppErrorAC(null))
     };
 
         return (

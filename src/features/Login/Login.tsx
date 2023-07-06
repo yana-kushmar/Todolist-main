@@ -8,12 +8,25 @@ import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import {FormikErrors, useFormik} from "formik";
+import {loginTC} from "./auth-reducer";
+import {useAppDispatch, useAppSelector} from "../../app/store";
+import {setAppLoadingStatus} from "../../app/appReducer/AppReducer";
+import {Navigate} from "react-router-dom";
 
 type FormikErrorType = {
     email?: string
     password?: string
 }
+
+export type LoginType = {
+    email: string
+    password: string
+    rememberMe: boolean
+}
 export const Login = () => {
+    const dispatch = useAppDispatch()
+    const isLoggedIn= useAppSelector(store => store.auth.isLoggedIn)
+
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -29,17 +42,20 @@ export const Login = () => {
                 }
             if (!values.password) {
                 errors.password = 'Required';
-            } else if (values.password?.trim().length < 3) {
+            } else if (values.password?.trim().length < 4) {
                 errors.password = 'Should be more that 3 symbols';
             }
                 return errors;
         },
         onSubmit: values => {
-            alert(JSON.stringify(values, null, 2))
+            dispatch(loginTC(values))
             formik.resetForm()
         }
     })
 
+    if (isLoggedIn){
+        return  <Navigate to={'/'}/>
+    }
     return <Grid container justifyContent={'center'}>
         <Grid item justifyContent={'center'}>
             <FormControl>

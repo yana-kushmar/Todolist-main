@@ -3,7 +3,7 @@ import {Dispatch} from 'redux'
 import {
     AppActionsType,
     RequestStatusType,
-    setLoadingStatus,
+    setAppLoadingStatus,
 
 } from "../../app/appReducer/AppReducer";
 import {handleServerAppError} from "../../utils/errorUtils";
@@ -71,7 +71,7 @@ export const fetchTodolistsTC = () => {
     return (dispatch: Dispatch<TodolistActionsType | AppActionsType>) => {
         todolistsAPI.getTodolists()
             .then((res) => {
-                dispatch(setLoadingStatus('succeeded'))
+                dispatch(setAppLoadingStatus('succeeded'))
                 dispatch(setTodolistsAC(res.data))
             })
 
@@ -80,12 +80,12 @@ export const fetchTodolistsTC = () => {
 }
 export const removeTodolistTC = (todolistId: string) => {
     return (dispatch: Dispatch<TodolistActionsType | AppActionsType>) => {
-        dispatch(setLoadingStatus('loading'))
+        dispatch(setAppLoadingStatus('loading'))
         dispatch(changeEntityStatusAC(todolistId, 'loading'))
         todolistsAPI.deleteTodolist(todolistId)
             .then((res) => {
                 if (res.data.resultCode === ResultCode.SUCCESS) {
-                    dispatch(setLoadingStatus('succeeded'))
+                    dispatch(setAppLoadingStatus('succeeded'))
                     dispatch(removeTodolistAC(todolistId))
                 }else {
                     handleServerAppError(dispatch, res.data)
@@ -97,12 +97,12 @@ export const removeTodolistTC = (todolistId: string) => {
 }
 export const addTodolistTC = (title: string) => {
     return (dispatch: Dispatch<TodolistActionsType | AppActionsType>) => {
-        dispatch(setLoadingStatus('loading'))
+        dispatch(setAppLoadingStatus('loading'))
         todolistsAPI.createTodolist(title)
             .then((res) => {
                 if (res.data.resultCode === ResultCode.SUCCESS){
                     dispatch(addTodolistAC(res.data.data.item))
-                    dispatch(setLoadingStatus('succeeded'))
+                    dispatch(setAppLoadingStatus('succeeded'))
                 } else {
                    handleServerAppError(dispatch, res.data)
                 }
@@ -112,12 +112,12 @@ export const addTodolistTC = (title: string) => {
 }
 export const changeTodolistTitleTC = (id: string, title: string) => {
     return (dispatch: Dispatch<TodolistActionsType | AppActionsType>) => {
-        dispatch(setLoadingStatus('loading'))
+        dispatch(setAppLoadingStatus('loading'))
         todolistsAPI.updateTodolist(id, title)
             .then((res) => {
                 if (res.data.resultCode === ResultCode.SUCCESS) {
                     dispatch(changeTodolistTitleAC(id, title))
-                    dispatch(setLoadingStatus('succeeded'))
+                    dispatch(setAppLoadingStatus('succeeded'))
                 } else {
                     handleServerAppError(dispatch, res.data)
                 }})
