@@ -7,10 +7,10 @@ import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import {FormikErrors, useFormik} from "formik";
+import {useFormik} from "formik";
 import {loginTC} from "./auth-reducer";
 import {useAppDispatch, useAppSelector} from "../../app/store";
-import {setAppLoadingStatus} from "../../app/appReducer/AppReducer";
+
 import {Navigate} from "react-router-dom";
 
 type FormikErrorType = {
