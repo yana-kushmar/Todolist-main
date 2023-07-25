@@ -1,81 +1,84 @@
-import { Dispatch } from 'redux'
+import { Dispatch } from "redux";
 import {
-    SetAppErrorType,
-    setAppLoadingStatus,
-    setIsInitializedAC, SetIsInitializedType,
-    SetLoadingStatusType
-} from '../../app/appReducer/AppReducer'
-import {authAPI, ResultCode} from "../../api/todolists-api";
-import {handlerServerNetworkError, handleServerAppError} from "../../utils/errorUtils";
+  SetAppErrorType,
+  setAppLoadingStatus,
+  setIsInitializedAC,
+  SetIsInitializedType,
+  SetLoadingStatusType,
+} from "app/appReducer/AppReducer";
+import { authAPI, ResultCode } from "api/todolists-api";
+import { handlerServerNetworkError, handleServerAppError } from "utils/errorUtils";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-
-type ActionsType = ReturnType<typeof setIsLoggedInAC> | SetLoadingStatusType | SetAppErrorType |SetIsInitializedType
-
-const initialState = {
+const slice = createSlice({
+  name: "auth",
+  initialState: {
     isLoggedIn: false
-}
-type InitialStateType = typeof initialState
-
-
-export const authReducer = (state: InitialStateType = initialState, action: ActionsType): InitialStateType => {
-    switch (action.type) {
-        case 'login/SET-IS-LOGGED-IN':
-            return {...state, isLoggedIn: action.value}
-        default:
-            return state
+  },
+  reducers: {
+    setIsLoggedInAC: (state, action: PayloadAction<{isLoggedIn: boolean}>) => {
+      state.isLoggedIn = action.payload.isLoggedIn
     }
-}
 
-export const setIsLoggedInAC = (value: boolean) => ({type: 'login/SET-IS-LOGGED-IN', value} as const)
+  }
+});
+
+export const authReducer = slice.reducer;
+export const {setIsLoggedInAC} = slice.actions
+export const authActions = slice.actions
+
+type ActionsType = ReturnType<typeof setIsLoggedInAC> | SetLoadingStatusType | SetAppErrorType | SetIsInitializedType;
+
+
+
+// export const setIsLoggedInAC = (value: boolean) => ({ type: "login/SET-IS-LOGGED-IN", value } as const);
 
 export const loginTC = (data: any) => async (dispatch: Dispatch<ActionsType>) => {
-    dispatch(setAppLoadingStatus('loading'))
-    try{
-        const result = await authAPI.login(data)
-        if (result.data.resultCode === ResultCode.SUCCESS) {
-            dispatch(setIsLoggedInAC(true))
-            dispatch(setAppLoadingStatus("succeeded"))
-        } else {
-            handleServerAppError(dispatch, result.data)
-        }
-    } catch (e){
-        const error = (e as { message: string })
-        handlerServerNetworkError(dispatch, error)
+  dispatch(setAppLoadingStatus("loading"));
+  try {
+    const result = await authAPI.login(data);
+    if (result.data.resultCode === ResultCode.SUCCESS) {
+      dispatch(setIsLoggedInAC({isLoggedIn: true}));
+      dispatch(setAppLoadingStatus("succeeded"));
+    } else {
+      handleServerAppError(dispatch, result.data);
     }
-}
+  } catch (e) {
+    const error = e as { message: string };
+    handlerServerNetworkError(dispatch, error);
+  }
+};
 
 export const meTC = () => async (dispatch: Dispatch<ActionsType>) => {
-    dispatch(setAppLoadingStatus('loading'))
-    try{
-        const result = await authAPI.me()
-        if (result.data.resultCode === ResultCode.SUCCESS) {
-            dispatch(setIsLoggedInAC(true))
-            dispatch(setIsInitializedAC(true))
-            dispatch(setAppLoadingStatus("succeeded"))
-        } else {
-            handleServerAppError(dispatch, result.data)
-        }
-    } catch (e){
-        const error = (e as { message: string })
-        handlerServerNetworkError(dispatch, error)
-    }finally {
-        dispatch(setIsInitializedAC(true))
+  dispatch(setAppLoadingStatus("loading"));
+  try {
+    const result = await authAPI.me();
+    if (result.data.resultCode === ResultCode.SUCCESS) {
+      dispatch(setIsLoggedInAC({isLoggedIn: true}));
+      dispatch(setIsInitializedAC(true));
+      dispatch(setAppLoadingStatus("succeeded"));
+    } else {
+      handleServerAppError(dispatch, result.data);
     }
-}
+  } catch (e) {
+    const error = e as { message: string };
+    handlerServerNetworkError(dispatch, error);
+  } finally {
+    dispatch(setIsInitializedAC(true));
+  }
+};
 export const logOutTC = () => async (dispatch: Dispatch<ActionsType>) => {
-    dispatch(setAppLoadingStatus('loading'))
-    try{
-        const result = await authAPI.logOut()
-        if (result.data.resultCode === ResultCode.SUCCESS) {
-            dispatch(setIsLoggedInAC(false))
-            dispatch(setAppLoadingStatus("succeeded"))
-        } else {
-            handleServerAppError(dispatch, result.data)
-        }
-    } catch (e){
-        const error = (e as { message: string })
-        handlerServerNetworkError(dispatch, error)
+  dispatch(setAppLoadingStatus("loading"));
+  try {
+    const result = await authAPI.logOut();
+    if (result.data.resultCode === ResultCode.SUCCESS) {
+      dispatch(setIsLoggedInAC({isLoggedIn: false}));
+      dispatch(setAppLoadingStatus("succeeded"));
+    } else {
+      handleServerAppError(dispatch, result.data);
     }
-}
-
-
+  } catch (e) {
+    const error = e as { message: string };
+    handlerServerNetworkError(dispatch, error);
+  }
+};
