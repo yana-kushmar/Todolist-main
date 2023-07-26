@@ -3,7 +3,7 @@ import {appActions, RequestStatusType} from "app/appReducer/AppReducer";
 import {handleServerAppError} from "utils/errorUtils";
 import {AppThunk} from "app/store";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-
+import {clearTasksAndTodolists} from "common /common-actions";
 
 
 export type FilterValuesType = "all" | "active" | "completed";
@@ -41,7 +41,15 @@ const slice = createSlice({
         changeEntityStatus: (state, action: PayloadAction<{ todoId: string, entityStatus: RequestStatusType }>) => {
             const index = state.findIndex(todo => todo.id === action.payload.todoId)
             if (index !== -1) state[index].entityStatus = action.payload.entityStatus
-        }
+        },
+
+    },
+    extraReducers: builder => {
+        builder
+            .addCase(clearTasksAndTodolists.type, () => {
+            return []
+
+        })
     }
 
 });
@@ -50,12 +58,23 @@ const slice = createSlice({
 // thunks
 export const fetchTodolistsTC = (): AppThunk => {
     return (dispatch) => {
-        todolistsAPI.getTodolists().then((res) => {
-            dispatch(appActions.setAppLoadingStatus({status: "succeeded"}));
-            dispatch(todolistsAction.setTodolists({todolists: res.data}));
-        });
+        todolistsAPI.getTodolists()
+            .then((res) => {
+                dispatch(todolistsAction.setTodolists({todolists: res.data}));
+                dispatch(appActions.setAppLoadingStatus({status: "succeeded"}));
+                return res.data
+            })
+            .then((todos) => {
+            todos.forEach((tl) => {
+                dispatch(fetchTodolistsTC())
+            })
+
+        })
     };
 };
+
+
+
 export const removeTodolistTC = (todolistId: string): AppThunk => {
     return (dispatch) => {
         dispatch(appActions.setAppLoadingStatus({status: "loading"}));
@@ -95,7 +114,7 @@ export const changeTodolistTitleTC = (id: string, title: string): AppThunk => {
             .updateTodolist(id, title)
             .then((res) => {
                 if (res.data.resultCode === ResultCode.SUCCESS) {
-                    dispatch(todolistsAction.changeTodolistTitle({ id: id, title: title }));
+                    dispatch(todolistsAction.changeTodolistTitle({id: id, title: title}));
                     dispatch(appActions.setAppLoadingStatus({status: "succeeded"}));
                 } else {
                     handleServerAppError(dispatch, res.data);
@@ -109,4 +128,5 @@ export const changeTodolistTitleTC = (id: string, title: string): AppThunk => {
 
 export const todolistsAction = slice.actions;
 export const todolistsReducer = slice.reducer;
+
 

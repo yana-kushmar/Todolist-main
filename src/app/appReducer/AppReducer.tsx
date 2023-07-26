@@ -27,13 +27,11 @@ const slice = createSlice({
 })
 
 
-//
 export const initializeAppTC = (): AppThunk => (dispatch) => {
   authAPI.me().then(res => {
     if (res.data.resultCode === 0) {
       dispatch(authActions.setIsLoggedInAC({isLoggedIn: true}));
     } else {
-
     }
     dispatch(appActions.setAppInitialized({isInitialized: true}));
   })

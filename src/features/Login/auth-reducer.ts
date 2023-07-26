@@ -3,6 +3,9 @@ import { handlerServerNetworkError, handleServerAppError } from "utils/errorUtil
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "app/store";
 import {appActions} from "app/appReducer/AppReducer";
+import {todolistsAction} from "features/TodolistsList/todolists-reducer";
+import {tasksAction} from "features/TodolistsList/tasks-reducer";
+import {clearTasksAndTodolists} from "common /common-actions";
 
 const slice = createSlice({
   name: "auth",
@@ -58,6 +61,7 @@ export const logOutTC = (): AppThunk => async (dispatch) => {
     const result = await authAPI.logOut();
     if (result.data.resultCode === ResultCode.SUCCESS) {
       dispatch(authActions.setIsLoggedInAC({ isLoggedIn: false }));
+     dispatch(clearTasksAndTodolists())
       dispatch(appActions.setAppLoadingStatus({status:"succeeded"}));
     } else {
       handleServerAppError(dispatch, result.data);

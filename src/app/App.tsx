@@ -11,18 +11,20 @@ import Container from "@mui/material/Container";
 import { Menu } from "@mui/icons-material";
 import { CircularProgress, LinearProgress } from "@mui/material";
 
-import {initializeAppTC, RequestStatusType} from "./appReducer/AppReducer";
+import {initializeAppTC} from "./appReducer/AppReducer";
 import { ErrorSnackbars } from "components/ErrorsSnackbar/ErrorsSnackbar";
 import { Login } from "features/Login/Login";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { logOutTC} from "features/Login/auth-reducer";
 import {useDispatch, useSelector} from "react-redux";
+import {selectIsLoggedIn} from "features/Login/auth.selectors";
+import {selectIsInitialized, selectStatus} from "app/appReducer/app.selectors";
 
 function App() {
   const dispatch = useDispatch();
-  const status = useSelector<RequestStatusType>((store) => store.app.status);
-  const isInitialized = useSelector<boolean>((store) => store.app.isInitialized);
-  const isLoggedIn = useSelector((store) => store.auth.isLoggedIn);
+  const status = useSelector(selectStatus);
+  const isInitialized = useSelector(selectIsInitialized); /////
+  const isLoggedIn = useSelector(selectIsLoggedIn);
 
   useEffect(() => {
     dispatch(initializeAppTC());
