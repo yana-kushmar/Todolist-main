@@ -10,21 +10,22 @@ import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import { Menu } from "@mui/icons-material";
 import { CircularProgress, LinearProgress } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "./store";
-import { RequestStatusType, setIsInitializedAC } from "./appReducer/AppReducer";
+
+import {initializeAppTC, RequestStatusType} from "./appReducer/AppReducer";
 import { ErrorSnackbars } from "components/ErrorsSnackbar/ErrorsSnackbar";
 import { Login } from "features/Login/Login";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { logOutTC, meTC } from "features/Login/auth-reducer";
+import { logOutTC} from "features/Login/auth-reducer";
+import {useDispatch, useSelector} from "react-redux";
 
 function App() {
-  const dispatch = useAppDispatch();
-  const status = useAppSelector<RequestStatusType>((store) => store.app.status);
-  const isInitialized = useAppSelector<boolean>((store) => store.app.isInitialized);
-  const isLoggedIn = useAppSelector((store) => store.auth.isLoggedIn);
+  const dispatch = useDispatch();
+  const status = useSelector<RequestStatusType>((store) => store.app.status);
+  const isInitialized = useSelector<boolean>((store) => store.app.isInitialized);
+  const isLoggedIn = useSelector((store) => store.auth.isLoggedIn);
 
   useEffect(() => {
-    dispatch(meTC());
+    dispatch(initializeAppTC());
   }, []);
 
   if (!isInitialized) {

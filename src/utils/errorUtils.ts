@@ -1,24 +1,23 @@
-import {
-  setAppErrorAC,
-  SetAppErrorType,
-  setAppLoadingStatus,
-  SetLoadingStatusType,
-} from "app/appReducer/AppReducer";
+
 import { Dispatch } from "redux";
 import { ResponseType } from "api/todolists-api";
+import {appActions} from "app/appReducer/AppReducer";
 
-type ErrorUtilsDispatchType = SetLoadingStatusType | SetAppErrorType;
 
-export const handlerServerNetworkError = (dispatch: Dispatch<ErrorUtilsDispatchType>, error: { message: string }) => {
-  dispatch(setAppErrorAC(error.message ? error.message : "Some error occurred"));
-  dispatch(setAppLoadingStatus("failed"));
+export const handlerServerNetworkError = (
+    dispatch: Dispatch,
+    error: { message: string }) => {
+  dispatch(appActions.setAppError({error: error.message ? error.message : "Some error occurred"}));
+  dispatch(appActions.setAppLoadingStatus({status: "failed"}));
 };
 
-export const handleServerAppError = <T>(dispatch: Dispatch<ErrorUtilsDispatchType>, data: ResponseType<T>) => {
+export const handleServerAppError = <T>(
+    dispatch: Dispatch,
+    data: ResponseType<T>) => {
   if (data.messages.length) {
-    dispatch(setAppErrorAC(data.messages[0]));
+    dispatch(appActions.setAppError({error: data.messages[0]}));
   } else {
-    dispatch(setAppErrorAC("Some error"));
+    dispatch(appActions.setAppError({error: "Some error"}));
   }
-  dispatch(setAppLoadingStatus("failed"));
+  dispatch(appActions.setAppLoadingStatus({status: "failed"}));
 };

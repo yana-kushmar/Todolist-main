@@ -1,62 +1,47 @@
-import { Dispatch } from "redux";
-import {
-  SetAppErrorType,
-  setAppLoadingStatus,
-  setIsInitializedAC,
-  SetIsInitializedType,
-  SetLoadingStatusType,
-} from "app/appReducer/AppReducer";
 import { authAPI, ResultCode } from "api/todolists-api";
 import { handlerServerNetworkError, handleServerAppError } from "utils/errorUtils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { AppThunk } from "app/store";
+import {appActions} from "app/appReducer/AppReducer";
 
 const slice = createSlice({
   name: "auth",
   initialState: {
-    isLoggedIn: false
+    isLoggedIn: false,
   },
   reducers: {
-    setIsLoggedInAC: (state, action: PayloadAction<{isLoggedIn: boolean}>) => {
-      state.isLoggedIn = action.payload.isLoggedIn
-    }
-
-  }
+    setIsLoggedInAC: (state, action: PayloadAction<{ isLoggedIn: boolean }>) => {
+      state.isLoggedIn = action.payload.isLoggedIn;
+    },
+  },
 });
 
-export const authReducer = slice.reducer;
-export const {setIsLoggedInAC} = slice.actions
-export const authActions = slice.actions
-
-type ActionsType = ReturnType<typeof setIsLoggedInAC> | SetLoadingStatusType | SetAppErrorType | SetIsInitializedType;
-
-
-
-// export const setIsLoggedInAC = (value: boolean) => ({ type: "login/SET-IS-LOGGED-IN", value } as const);
-
-export const loginTC = (data: any) => async (dispatch: Dispatch<ActionsType>) => {
-  dispatch(setAppLoadingStatus("loading"));
-  try {
-    const result = await authAPI.login(data);
-    if (result.data.resultCode === ResultCode.SUCCESS) {
-      dispatch(setIsLoggedInAC({isLoggedIn: true}));
-      dispatch(setAppLoadingStatus("succeeded"));
-    } else {
-      handleServerAppError(dispatch, result.data);
+export const loginTC =
+  (data: any): AppThunk =>
+  async (dispatch) => {
+    dispatch(appActions.setAppLoadingStatus({status:"loading"}));
+    try {
+      const result = await authAPI.login(data);
+      if (result.data.resultCode === ResultCode.SUCCESS) {
+        dispatch(authActions.setIsLoggedInAC({ isLoggedIn: true }));
+        dispatch(appActions.setAppLoadingStatus({status:"succeeded"}));
+      } else {
+        handleServerAppError(dispatch, result.data);
+      }
+    } catch (e) {
+      const error = e as { message: string };
+      handlerServerNetworkError(dispatch, error);
     }
-  } catch (e) {
-    const error = e as { message: string };
-    handlerServerNetworkError(dispatch, error);
-  }
-};
+  };
 
-export const meTC = () => async (dispatch: Dispatch<ActionsType>) => {
-  dispatch(setAppLoadingStatus("loading"));
+export const meTC = (): AppThunk => async (dispatch) => {
+  dispatch(appActions.setAppLoadingStatus({status:"loading"}));
   try {
     const result = await authAPI.me();
     if (result.data.resultCode === ResultCode.SUCCESS) {
-      dispatch(setIsLoggedInAC({isLoggedIn: true}));
-      dispatch(setIsInitializedAC(true));
-      dispatch(setAppLoadingStatus("succeeded"));
+      dispatch(authActions.setIsLoggedInAC({ isLoggedIn: true }));
+      dispatch(appActions.setAppInitialized({isInitialized: true}));
+      dispatch(appActions.setAppLoadingStatus({status:"succeeded"}));
     } else {
       handleServerAppError(dispatch, result.data);
     }
@@ -64,16 +49,16 @@ export const meTC = () => async (dispatch: Dispatch<ActionsType>) => {
     const error = e as { message: string };
     handlerServerNetworkError(dispatch, error);
   } finally {
-    dispatch(setIsInitializedAC(true));
+    dispatch(appActions.setAppInitialized({isInitialized:true}));
   }
 };
-export const logOutTC = () => async (dispatch: Dispatch<ActionsType>) => {
-  dispatch(setAppLoadingStatus("loading"));
+export const logOutTC = (): AppThunk => async (dispatch) => {
+  dispatch(appActions.setAppLoadingStatus({status:"loading"}));
   try {
     const result = await authAPI.logOut();
     if (result.data.resultCode === ResultCode.SUCCESS) {
-      dispatch(setIsLoggedInAC({isLoggedIn: false}));
-      dispatch(setAppLoadingStatus("succeeded"));
+      dispatch(authActions.setIsLoggedInAC({ isLoggedIn: false }));
+      dispatch(appActions.setAppLoadingStatus({status:"succeeded"}));
     } else {
       handleServerAppError(dispatch, result.data);
     }
@@ -82,3 +67,6 @@ export const logOutTC = () => async (dispatch: Dispatch<ActionsType>) => {
     handlerServerNetworkError(dispatch, error);
   }
 };
+
+export const authReducer = slice.reducer;
+export const authActions = slice.actions;
