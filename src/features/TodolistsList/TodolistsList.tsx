@@ -8,7 +8,7 @@ import {
   removeTodolistTC,
 
 } from "./todolists-reducer";
-import { removeTaskTC, tasksThunk, updateTaskTC} from "./tasks-reducer";
+import { removeTaskTC, tasksThunk} from "./tasks-reducer";
 import { TaskStatuses } from "api/todolists-api";
 import { AddItemForm } from "components/AddItemForm/AddItemForm";
 import { Todolist } from "./Todolist/Todolist";
@@ -40,12 +40,12 @@ export const TodolistsList: React.FC = () => {
     dispatch(tasksThunk.addTask({ todolistId, title }));
   }, []);
 
-  const changeStatus = useCallback(function (id: string, status: TaskStatuses, todolistId: string) {
-    dispatch(updateTaskTC(id, { status }, todolistId));
+  const changeStatus = useCallback(function (taskId: string, status: TaskStatuses, todolistId: string) {
+    dispatch(tasksThunk.updateTask({taskId, todolistId, domainModel: {status} });
   }, []);
 
-  const changeTaskTitle = useCallback(function (id: string, newTitle: string, todolistId: string) {
-    dispatch(updateTaskTC(id, { title: newTitle }, todolistId));
+  const changeTaskTitle = useCallback(function (taskId: string, newTitle: string, todolistId: string) {
+    dispatch(tasksThunk.updateTask(taskId, {title: newTitle}, todolistId );
   }, []);
 
   const changeFilter = useCallback(function (value: FilterValuesType, todolistId: string) {
