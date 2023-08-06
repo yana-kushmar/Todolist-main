@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { LoginType } from "features/Login/Login";
 import {UpdateDomainTaskModelType} from "features/TodolistsList/tasks-reducer";
+import {ResponseType} from "common /common-types";
 
 export type TodolistType = {
   id: string;
@@ -8,12 +9,7 @@ export type TodolistType = {
   addedDate: string;
   order: number;
 };
-export type ResponseType<D = {}> = {
-  resultCode: number;
-  messages: Array<string>;
-  fieldsErrors: Array<string>;
-  data: D;
-};
+
 export enum ResultCode {
   SUCCESS = 0,
   ERROR = 1,
@@ -62,7 +58,7 @@ type UserType = {
   email: string;
   login: string;
 };
-export type addTaskArgType= {
+export type AddTaskArgType= {
   title: string,
   todolistId: string
 }
@@ -120,7 +116,7 @@ export const todolistsAPI = {
   deleteTask(todolistId: string, taskId: string) {
     return instance.delete<ResponseType>(`todo-lists/${todolistId}/tasks/${taskId}`);
   },
-  createTask( arg: addTaskArgType) {
+  createTask( arg: AddTaskArgType) {
     return instance.post<
       ResponseType<{ item: TaskType }>,
       AxiosResponse<ResponseType<{ item: TaskType }>>,

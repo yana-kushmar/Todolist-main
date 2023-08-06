@@ -11,23 +11,24 @@ import Container from "@mui/material/Container";
 import { Menu } from "@mui/icons-material";
 import { CircularProgress, LinearProgress } from "@mui/material";
 
-import {initializeAppTC} from "./appReducer/AppReducer";
+import {appThunk} from "./appReducer/AppReducer";
 import { ErrorSnackbars } from "components/ErrorsSnackbar/ErrorsSnackbar";
 import { Login } from "features/Login/Login";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { logOutTC} from "features/Login/auth-reducer";
-import {useDispatch, useSelector} from "react-redux";
+import {authThunk} from "features/Login/auth-reducer";
+import { useSelector} from "react-redux";
 import {selectIsLoggedIn} from "features/Login/auth.selectors";
 import {selectIsInitialized, selectStatus} from "app/appReducer/app.selectors";
+import { useAppDispatch } from "./appReducer/useAppDispatch";
 
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const status = useSelector(selectStatus);
   const isInitialized = useSelector(selectIsInitialized); /////
   const isLoggedIn = useSelector(selectIsLoggedIn);
 
   useEffect(() => {
-    dispatch(initializeAppTC());
+    dispatch(appThunk.initializeApp());
   }, []);
 
   if (!isInitialized) {
@@ -39,7 +40,7 @@ function App() {
   }
 
   const logOut = () => {
-    dispatch(logOutTC());
+    dispatch(authThunk.logOut());
   };
   return (
     <div className="App">

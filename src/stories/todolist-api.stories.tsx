@@ -66,7 +66,7 @@ export const CreateTasks = () => {
   useEffect(() => {
     const title = "go";
     const todolistId = "41a222bd-44cb-4c07-94e2-5316331ce661";
-    todolistsAPI.createTask(todolistId, title).then((res) => {
+    todolistsAPI.createTask({ todolistId, title }).then((res) => {
       setState(res.data);
     });
   }, []);

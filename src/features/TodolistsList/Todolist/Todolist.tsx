@@ -60,7 +60,7 @@ export const Todolist = memo(function (props: PropsType) {
     [props.id, props.changeFilter]
   );
 
-  let tasksForTodolist = props.tasks;
+  let tasksForTodolist = props.tasks || [];
 
   if (props.filter === "active") {
     tasksForTodolist = props.tasks.filter((t) => t.status === TaskStatuses.New);

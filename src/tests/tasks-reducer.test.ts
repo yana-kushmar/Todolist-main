@@ -1,7 +1,7 @@
-import { tasksReducer, TasksStateType } from "features/TodolistsList/tasks-reducer";
+import { tasksAction, tasksReducer, TasksStateType } from "features/TodolistsList/tasks-reducer";
 
-import {TaskPriorities, TaskStatuses, UpdateTaskArgType} from "api/todolists-api";
-import { todolistsAction } from "features/TodolistsList/todolists-reducer";
+import { TaskPriorities, TaskStatuses, UpdateTaskArgType } from "api/todolists-api";
+import { todolistsAction, todolistsThunk } from "features/TodolistsList/todolists-reducer";
 import { tasksThunk } from "features/TodolistsList/tasks-reducer";
 
 let startState: TasksStateType = {};
@@ -87,8 +87,10 @@ beforeEach(() => {
 });
 
 test("correct task should be deleted from correct array", () => {
-  const action = removeTaskAC("2", "todolistId2");
-
+  const action = {
+    type: tasksThunk.removeTask.fulfilled.type,
+    payload: { taskId: "2", todolistId: "todolistId2" },
+  };
   const endState = tasksReducer(startState, action);
 
   expect(endState["todolistId1"].length).toBe(3);
@@ -133,11 +135,10 @@ test("status of specified task should be changed", () => {
   expect(endState["todolistId2"][1].status).toBe(TaskStatuses.New);
 });
 test("title of specified task should be changed", () => {
-
   type TaskType = {
-    type: typeof tasksThunk.updateTask.fulfilled.type,
-    payload: UpdateTaskArgType
-  }
+    type: typeof tasksThunk.updateTask.fulfilled.type;
+    payload: UpdateTaskArgType;
+  };
   const action: TaskType = {
     type: tasksThunk.updateTask.fulfilled.type,
     payload: { taskId: "2", domainModel: { title: "yogurt" }, todolistId: "todolistId2" },
@@ -150,12 +151,11 @@ test("title of specified task should be changed", () => {
   expect(endState["todolistId2"][0].title).toBe("bread");
 });
 test("new array should be added when new todolist is added", () => {
-  const action = addTodolist({
-    id: "blabla",
-    title: "new todolist",
-    order: 0,
-    addedDate: "",
-  });
+  const action = {
+    type: todolistsAction.addTodolist.type,
+    payload:{todolist: {id: "blabla", title: "new todolist", order: 0, addedDate: ""}},
+  };
+
 
   const endState = tasksReducer(startState, action);
 
@@ -180,10 +180,17 @@ test("propertry with todolistId should be deleted", () => {
 });
 
 test("empty arrays should be added when we set todolists", () => {
-  const action = todolists.setTodolists([
-    { id: "1", title: "title 1", order: 0, addedDate: "" },
-    { id: "2", title: "title 2", order: 0, addedDate: "" },
-  ]);
+
+  const action = {
+    type: todolistsAction.setTodolists.type,
+    payload: {
+      todolists: [
+        { id: "1", title: "title 1", order: 0, addedDate: "" },
+        { id: "2", title: "title 2", order: 0, addedDate: "" },
+      ],
+    },
+  };
+
 
   const endState = tasksReducer({}, action);
 
@@ -194,8 +201,14 @@ test("empty arrays should be added when we set todolists", () => {
   expect(endState["2"]).toBeDefined();
 });
 test("tasks should be added for todolist", () => {
-  const action = setTasksAC(startState["todolistId1"], "todolistId1");
 
+  const action = {
+    type: tasksThunk.fetchTasks.fulfilled.type,
+    payload: {
+      todolistId: "todolistId1",
+      tasks: [1,2,3]
+    },
+  };
   const endState = tasksReducer(
     {
       todolistId2: [],
