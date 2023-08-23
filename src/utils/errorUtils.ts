@@ -1,6 +1,6 @@
 import { Dispatch } from "redux";
 
-import {appActions} from "app/appReducer/AppReducer";
+import {appActions} from "app/appReducer/app-reducer";
 import axios, {AxiosError} from "axios";
 import {AppDispatch} from "app/store";
 import {ResponseType} from "common /common-types";

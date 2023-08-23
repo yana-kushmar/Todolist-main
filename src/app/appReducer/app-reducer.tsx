@@ -1,8 +1,9 @@
-import { authAPI } from "api/todolists-api";
+
 import {authActions} from "features/Login/auth-reducer";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {createAppAsyncThunk} from "utils/create-app-async-thunk";
-import {handleServerAppError, handleServerNetworkError} from "utils/errorUtils";
+import { handleServerNetworkError} from "utils/errorUtils";
+import {authAPI} from "api/auth-api";
 
 export type RequestStatusType = "idle" | "loading" | "succeeded" | "failed";
 
@@ -30,6 +31,17 @@ const slice = createSlice({
         .addCase(initializeApp.fulfilled, (state, action) => {
           state.isInitialized = action.payload.isInitialized
         })
+        .addMatcher(
+            (action) => {
+              console.log('addMatcher matcher: ', action.type)
+              return action.type.endsWith('/pending')
+            },
+            // 2 параметр - reducer
+            (state, action) => {
+              state.status = 'loading'
+              console.log('✅ addMatcher reducer')
+            }
+        )
 
   }
 })

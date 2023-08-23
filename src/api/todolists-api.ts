@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { LoginType } from "features/Login/Login";
+
 import {UpdateDomainTaskModelType} from "features/TodolistsList/tasks-reducer";
 import {ResponseType} from "common /common-types";
 
@@ -15,6 +15,12 @@ export enum ResultCode {
   ERROR = 1,
   ERROR_CAPTHCA = 10,
 }
+export type LoginType = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+  captcha?: string
+};
 export enum TaskStatuses {
   New = 0,
   InProgress = 1,
@@ -48,16 +54,7 @@ export type UpdateTaskModelType = {
   startDate: string;
   deadline: string;
 };
-type GetTasksResponse = {
-  error: string | null;
-  totalCount: number;
-  items: TaskType[];
-};
-type UserType = {
-  id: number;
-  email: string;
-  login: string;
-};
+
 export type AddTaskArgType= {
   title: string,
   todolistId: string
@@ -76,21 +73,6 @@ const instance = axios.create({
   },
 });
 
-//auth
-export const authAPI = {
-  login(data: LoginType) {
-    return instance.post<ResponseType<{ userId: number }>, AxiosResponse<ResponseType<{ userId: number }>>, LoginType>(
-      "/auth/login",
-      data
-    );
-  },
-  me() {
-    return instance.get<ResponseType<UserType>>("/auth/me");
-  },
-  logOut() {
-    return instance.delete<ResponseType<UserType>>("/auth/login");
-  },
-};
 
 // api
 export const todolistsAPI = {
@@ -110,24 +92,5 @@ export const todolistsAPI = {
   updateTodolist(id: string, title: string) {
     return instance.put<ResponseType, AxiosResponse<ResponseType>, { title: string }>(`todo-lists/${id}`, { title });
   },
-  getTasks(todolistId: string) {
-    return instance.get<GetTasksResponse>(`todo-lists/${todolistId}/tasks`);
-  },
-  deleteTask(todolistId: string, taskId: string) {
-    return instance.delete<ResponseType>(`todo-lists/${todolistId}/tasks/${taskId}`);
-  },
-  createTask( arg: AddTaskArgType) {
-    return instance.post<
-      ResponseType<{ item: TaskType }>,
-      AxiosResponse<ResponseType<{ item: TaskType }>>,
-      { title: string }
-    >(`todo-lists/${arg.todolistId}/tasks`, { title: arg.title });
-  },
-  updateTask(todolistId: string, taskId: string, model: UpdateTaskModelType) {
-    return instance.put<
-      ResponseType<{ item: TaskType }>,
-      AxiosResponse<ResponseType<{ item: TaskType }>>,
-      UpdateTaskModelType
-    >(`todo-lists/${todolistId}/tasks/${taskId}`, model);
-  },
+
 };

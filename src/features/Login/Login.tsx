@@ -7,24 +7,20 @@ import FormGroup from "@mui/material/FormGroup";
 import FormLabel from "@mui/material/FormLabel";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import {FormikHelpers, useFormik} from "formik";
+import { useFormik} from "formik";
 import {authThunk} from "./auth-reducer";
 import {AppRootStateType} from "app/store";
 
 import { Navigate } from "react-router-dom";
 import {useSelector} from "react-redux";
 import {useAppDispatch} from "app/appReducer/useAppDispatch";
+import {LoginType} from "api/todolists-api";
 
-type FormikErrorType = {
-  email?: string;
-  password?: string;
-};
 
-export type LoginType = {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-};
+
+
+type FormikErrorType = Partial<Omit<LoginType, "captcha">>
+  
 export const Login = () => {
   const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((store: AppRootStateType) => store.auth.isLoggedIn);

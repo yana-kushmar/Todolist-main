@@ -1,7 +1,7 @@
 import * as React from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import {appActions} from "app/appReducer/AppReducer";
+import {appActions} from "app/appReducer/app-reducer";
 import {useDispatch, useSelector} from "react-redux";
 import {selectError} from "app/appReducer/app.selectors";
 

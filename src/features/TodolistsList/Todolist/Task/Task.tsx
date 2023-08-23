@@ -5,45 +5,47 @@ import { TaskStatuses, TaskType } from "api/todolists-api";
 import { Delete } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import Checkbox from "@mui/material/Checkbox";
+import {tasksThunk} from "features/TodolistsList/tasks-reducer";
+import {useAppDispatch} from "app/appReducer/useAppDispatch";
 
 type TaskPropsType = {
   task: TaskType;
   todolistId: string;
-  changeTaskStatus: (id: string, status: TaskStatuses, todolistId: string) => void;
-  changeTaskTitle: (taskId: string, newTitle: string, todolistId: string) => void;
-  removeTask: (taskId: string, todolistId: string) => void;
+
+
 };
 export const Task = memo((props: TaskPropsType) => {
-  const onClickHandler = useCallback(
-    () => props.removeTask(props.task.id, props.todolistId),
-    [props.task.id, props.todolistId]
-  );
+    const dispatch = useAppDispatch()
 
-  const onChangeHandler = useCallback(
+    const removeTaskHandler = useCallback(function () {
+        dispatch(tasksThunk.removeTask({ taskId: props.task.id, todolistId: props.todolistId }))},
+            []
+    )
+
+  const changeTaskStatusHandler = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      let newIsDoneValue = e.currentTarget.checked;
-      props.changeTaskStatus(
-        props.task.id,
-        newIsDoneValue ? TaskStatuses.Completed : TaskStatuses.New,
-        props.todolistId
+        const newIsDoneValue = e.currentTarget.checked;
+        dispatch(tasksThunk.updateTask({ taskId: props.task.id, todolistId: props.todolistId, domainModel: { status:newIsDoneValue ? TaskStatuses.Completed : TaskStatuses.New, } })
       );
     },
-    [props.task.id, props.todolistId]
+    []
   );
 
-  const onTitleChangeHandler = useCallback(
-    (newValue: string) => {
-      props.changeTaskTitle(props.task.id, newValue, props.todolistId);
+
+  const changeTaskTitleHandler = useCallback(
+    (newTitle: string) => {
+        dispatch(tasksThunk.updateTask({ taskId: props.task.id, todolistId: props.todolistId, domainModel: { title: newTitle } }))
+
     },
-    [props.task.id, props.todolistId]
+    []
   );
 
   return (
     <div key={props.task.id} className={props.task.status === TaskStatuses.Completed ? "is-done" : ""}>
-      <Checkbox checked={props.task.status === TaskStatuses.Completed} color="primary" onChange={onChangeHandler} />
+      <Checkbox checked={props.task.status === TaskStatuses.Completed} color="primary" onChange={changeTaskStatusHandler} />
 
-      <EditableSpan value={props.task.title} onChange={onTitleChangeHandler} />
-      <IconButton onClick={onClickHandler}>
+      <EditableSpan value={props.task.title} onChange={changeTaskTitleHandler} />
+      <IconButton onClick={removeTaskHandler}>
         <Delete />
       </IconButton>
     </div>

@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 
 import {FilterValuesType, todolistsAction, todolistsThunk} from "./todolists-reducer";
-import { tasksThunk } from "./tasks-reducer";
-import { TaskStatuses } from "api/todolists-api";
 import { AddItemForm } from "components/AddItemForm/AddItemForm";
 import { Todolist } from "./Todolist/Todolist";
 
@@ -26,21 +24,8 @@ export const TodolistsList: React.FC = () => {
     dispatch(todolistsThunk.fetchTodolists());
   }, []);
 
-  const removeTask = useCallback(function (taskId: string, todolistId: string) {
-    dispatch(tasksThunk.removeTask({ taskId, todolistId }));
-  }, []);
 
-  const addTask = useCallback(function (title: string, todolistId: string) {
-    dispatch(tasksThunk.addTask({ todolistId, title }));
-  }, []);
 
-  const changeStatus = useCallback(function (taskId: string, status: TaskStatuses, todolistId: string) {
-    dispatch(tasksThunk.updateTask({ taskId, todolistId, domainModel: { status } }));
-  }, []);
-
-  const changeTaskTitle = useCallback(function (taskId: string, newTitle: string, todolistId: string) {
-    dispatch(tasksThunk.updateTask({ taskId, todolistId, domainModel: { title: newTitle } }));
-  }, []);
 
   const changeFilter = useCallback(function (filter: FilterValuesType, todolistId: string) {
     dispatch(todolistsAction.changeTodolistFilter({ todolistId, filter }));
@@ -79,13 +64,9 @@ export const TodolistsList: React.FC = () => {
                   title={tl.title}
                   entityStatus={tl.entityStatus}
                   tasks={allTodolistTasks}
-                  removeTask={removeTask}
                   changeFilter={changeFilter}
-                  addTask={addTask}
-                  changeTaskStatus={changeStatus}
                   filter={tl.filter}
                   removeTodolist={removeTodolist}
-                  changeTaskTitle={changeTaskTitle}
                   changeTodolistTitle={changeTodolistTitle}
                 />
               </Paper>

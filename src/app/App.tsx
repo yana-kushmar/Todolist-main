@@ -11,7 +11,7 @@ import Container from "@mui/material/Container";
 import { Menu } from "@mui/icons-material";
 import { CircularProgress, LinearProgress } from "@mui/material";
 
-import {appThunk} from "./appReducer/AppReducer";
+import {appThunk} from "app/appReducer/app-reducer";
 import { ErrorSnackbars } from "components/ErrorsSnackbar/ErrorsSnackbar";
 import { Login } from "features/Login/Login";
 import { Navigate, Route, Routes } from "react-router-dom";
