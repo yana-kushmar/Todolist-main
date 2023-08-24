@@ -2,7 +2,7 @@
 import {authActions} from "features/Login/auth-reducer";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {createAppAsyncThunk} from "utils/create-app-async-thunk";
-import { handleServerNetworkError} from "utils/errorUtils";
+
 import {authAPI} from "api/auth-api";
 
 export type RequestStatusType = "idle" | "loading" | "succeeded" | "failed";
@@ -16,9 +16,7 @@ const slice = createSlice({
     isInitialized: false,
   },
   reducers: {
-    setAppLoadingStatus: (state, action:PayloadAction<{status:  RequestStatusType}>) => {
-      state.status = action.payload.status
-  },
+
     setAppError: (state, action: PayloadAction<{error: string | null}>) => {
       state.error = action.payload.error
     },
@@ -65,22 +63,16 @@ const slice = createSlice({
 export const initializeApp =  createAppAsyncThunk<{isInitialized: boolean}, void>(
     'app/initializeApp',
     async (_, thunkAPI)=> {
-      const {dispatch, rejectWithValue} = thunkAPI
-      try {
+        const {dispatch, rejectWithValue} = thunkAPI
         const res = await authAPI.me()
-          if (res.data.resultCode === 0) {
+        if (res.data.resultCode === 0) {
             dispatch(authActions.setIsLoggedIn({isLoggedIn: true}));
             return {isInitialized: true}
-          } else {
+        } else {
 
-            return rejectWithValue(null);
-          }
-      } catch (err) {
-        const error = err as { message: string };
-        handleServerNetworkError(error, dispatch);
-        return rejectWithValue(null);
-      }
-      }
+            return rejectWithValue({data: res.data, showGlobalError: true});
+        }
+    }
 
 )
 

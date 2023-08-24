@@ -24,7 +24,7 @@ import { useAppDispatch } from "./appReducer/useAppDispatch";
 function App() {
   const dispatch = useAppDispatch();
   const status = useSelector(selectStatus);
-  const isInitialized = useSelector(selectIsInitialized); /////
+  const isInitialized = useSelector(selectIsInitialized);
   const isLoggedIn = useSelector(selectIsLoggedIn);
 
   useEffect(() => {

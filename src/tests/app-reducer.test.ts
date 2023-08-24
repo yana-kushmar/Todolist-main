@@ -16,12 +16,6 @@ describe('app slice', () => {
     expect(endState.error).toBe("some error");
   })
 
-  it("correct status  should be set ", () => {
-    const endState = appReducer(startState, appActions.setAppLoadingStatus({status: "loading"}));
-
-    expect(endState.status).toBe("loading");
-  });
-
 
 })
 

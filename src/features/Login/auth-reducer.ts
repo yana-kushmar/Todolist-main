@@ -1,7 +1,6 @@
 import { LoginType, ResultCode} from "api/todolists-api";
-import { handleServerAppError, handleServerNetworkError } from "utils/errorUtils";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {appActions, RequestStatusType} from "app/appReducer/app-reducer";
+import { RequestStatusType} from "app/appReducer/app-reducer";
 
 import { clearTasksAndTodolists } from "common /common-actions";
 import { createAppAsyncThunk } from "utils/create-app-async-thunk";
@@ -35,45 +34,26 @@ const slice = createSlice({
   },
 });
 
-export const login = createAppAsyncThunk<{ isLoggedIn: boolean }, LoginType>("auth/login", async (data, thunkAPI) => {
-  const { dispatch, rejectWithValue } = thunkAPI;
-  try {
-    dispatch(appActions.setAppLoadingStatus({ status: "loading" }));
+export const login = createAppAsyncThunk<{ isLoggedIn: boolean }, LoginType>("auth/login", async (data, {rejectWithValue}) => {
     const result = await authAPI.login(data);
     if (result.data.resultCode === ResultCode.SUCCESS) {
-      dispatch(appActions.setAppLoadingStatus({ status: "succeeded" }));
       return { isLoggedIn: true };
     } else {
-      handleServerAppError(dispatch, result.data);
-      return rejectWithValue(null);
+      return rejectWithValue({ data: result.data, showGlobalError: true });
     }
-  } catch (e) {
-    const error = e as { message: string };
-    handleServerNetworkError(error, dispatch);
-    return rejectWithValue(null);
-  }
 });
 
 export const logOut = createAppAsyncThunk<{ isLoggedIn: boolean }, void>(
     'auth/logOuth',
     async (_ , thunkAPI) => {
       const { dispatch, rejectWithValue } = thunkAPI;
-      try {
-        dispatch(appActions.setAppLoadingStatus({ status: "loading" }));
         const result = await authAPI.logOut();
         if (result.data.resultCode === ResultCode.SUCCESS) {
           dispatch(clearTasksAndTodolists());
-          dispatch(appActions.setAppLoadingStatus({ status: "succeeded" }));
           return { isLoggedIn: false }
         } else {
-          handleServerAppError(dispatch, result.data);
-          return rejectWithValue(null);
+          return rejectWithValue({ data: result.data, showGlobalError: true });
         }
-      } catch (e) {
-        const error = e as { message: string };
-        handleServerNetworkError(error, dispatch);
-        return rejectWithValue(null);
-      }
     }
 )
 

@@ -4,7 +4,7 @@ import {AnyAction, combineReducers} from "redux";
 import { appReducer } from "app/appReducer/app-reducer";
 import { authReducer } from "features/Login/auth-reducer";
 import {configureStore, ThunkAction} from '@reduxjs/toolkit'
-import thunkMiddleware, {  ThunkDispatch } from "redux-thunk";
+import thunkMiddleware from "redux-thunk";
 
 
 const rootReducer = combineReducers({
