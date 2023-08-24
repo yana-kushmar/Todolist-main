@@ -32,14 +32,29 @@ const slice = createSlice({
           state.isInitialized = action.payload.isInitialized
         })
         .addMatcher(
-            (action) => {
-              console.log('addMatcher matcher: ', action.type)
-              return action.type.endsWith('/pending')
-            },
-            // 2 параметр - reducer
+            action => action.type.endsWith('/pending'),
+            state => {
+                state.status = 'loading'
+            }
+        )
+        .addMatcher(
+            action => action.type.endsWith('/rejected'),
             (state, action) => {
-              state.status = 'loading'
-              console.log('✅ addMatcher reducer')
+                const { payload, error } = action
+                if (payload) {
+                    if (payload.showGlobalError) {
+                        state.error = payload.data.messages.length ? payload.data.messages[0] : 'Some error occurred'
+                    }
+                } else {
+                    state.error = error.message ? error.message : 'Some error occurred'
+                }
+                state.status = 'failed'
+            }
+        )
+        .addMatcher(
+            action => action.type.endsWith('/fulfilled'),
+            state => {
+                state.status = 'succeeded'
             }
         )
 

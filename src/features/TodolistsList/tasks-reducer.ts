@@ -15,8 +15,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { todolistsAction } from "features/TodolistsList/todolists-reducer";
 import { clearTasksAndTodolists } from "common /common-actions";
 import { createAppAsyncThunk } from "utils/create-app-async-thunk";
-import {thunkTryCatch} from "utils/thunk-try-catch";
+
 import {tasksAPI} from "api/tasks-api";
+import {thunkTryCatch} from "utils/thunk-try-catch";
 
 const initialState: TasksStateType = {};
 export type UpdateDomainTaskModelType = {
@@ -119,21 +120,35 @@ export const removeTask = createAppAsyncThunk<any, { taskId: string; todolistId:
 
 export const addTask = createAppAsyncThunk<{ task: TaskType }, AddTaskArgType>(
   "tasks/addTask",
-  async (arg, thunkAPI) => {
-    const { dispatch, rejectWithValue } = thunkAPI;
-    return thunkTryCatch(thunkAPI, async () => {
+  async (arg, {rejectWithValue}) => {
+
       const res = await tasksAPI.createTask(arg);
       if (res.data.resultCode === ResultCode.SUCCESS) {
         const task = res.data.data.item;
         return { task };
       } else {
-        handleServerAppError(dispatch, res.data);
         return rejectWithValue(null);
       }
-    })
 
   }
 );
+// export const addTask = createAppAsyncThunk<{ task: TaskType }, AddTaskArgType>(
+//   "tasks/addTask",
+//   async (arg, thunkAPI) => {
+//     const { dispatch, rejectWithValue } = thunkAPI;
+//     return thunkTryCatch(thunkAPI, async () => {
+//       const res = await tasksAPI.createTask(arg);
+//       if (res.data.resultCode === ResultCode.SUCCESS) {
+//         const task = res.data.data.item;
+//         return { task };
+//       } else {
+//         handleServerAppError(dispatch, res.data);
+//         return rejectWithValue(null);
+//       }
+//     })
+//
+//   }
+// );
 
 export const updateTask = createAppAsyncThunk<UpdateTaskArgType, UpdateTaskArgType>(
   "tasks/updateTask",
